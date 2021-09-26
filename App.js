@@ -11,6 +11,14 @@ const Stack = createStackNavigator();
 
 // The application’s main Chat component that renders the chat UI export default class Chat extends Component {...
 export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      backgroundColor: "",
+    };
+  }
+
   render() {
     return (
       <NavigationContainer>

@@ -8,6 +8,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 
 export default class Start extends React.Component {
@@ -16,59 +17,70 @@ export default class Start extends React.Component {
     this.state = { name: "", backgroundColor: "#B9C6AE" };
   }
 
+  startChatting = (name, backgroundColor) => {
+    this.props.navigation.navigate("Chat", {
+      name: this.state.name,
+      backgroundColor: this.state.backgroundColor,
+    });
+  };
+
   render() {
     return (
       //background image
-      <ImageBackground
-        style={styles.imageBackground}
-        resizeMode="cover"
-        source={require("../Background-Image.png")}
-      >
-        <View style={styles.mainContainer}>
-          <Text style={styles.title}>LiveChat</Text>
-          <View style={styles.container}>
-            <View style={styles.textInputContainer}>
-              <Image
-                style={styles.textInputIcon}
-                source={require("../icon.svg")}
-              />
-              <TextInput
-                style={styles.namefield}
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Your Name"
-              />
-            </View>
+      <View style={styles.mainContainer}>
+        <ImageBackground
+          style={styles.imageBackground}
+          resizeMode="cover"
+          source={require("../Background-Image.png")}
+        >
+          <View style={styles.titleBox}>
+            <Text style={styles.title}>LiveChat</Text>
+          </View>
+          <View style={styles.infoBox}>
+            <View style={styles.container}>
+              <View style={styles.textInputContainer}>
+                <Image
+                  style={styles.textInputIcon}
+                  source={require("../A5_project_assets/icon.svg")}
+                />
+                <TextInput
+                  style={styles.namefield}
+                  /* when user enters their name, change the name state to their name */
 
-            {/*choose background color */}
-            <View style={styles.chooseColorContainer}>
+                  onChangeText={(name) => this.setState({ name })}
+                  value={this.state.name}
+                  placeholder="Your Name"
+                />
+              </View>
+
+              {/*choose background color */}
+
               <Text style={styles.chooseColor}>Choose Background Color:</Text>
-              <View style={styles.backgroundColor}>
+              <View style={styles.chooseColorContainer}>
                 <TouchableOpacity
-                  style={[styles.color1]}
+                  style={[styles.setColor, { backgroundColor: "#090C08" }]}
                   onPress={() => this.setState({ backgroundColor: "#090C08" })}
                 ></TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.color2]}
+                  style={[styles.setColor, { backgroundColor: "#474056" }]}
                   onPress={() => this.setState({ backgroundColor: "#474056" })}
                 ></TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.color3]}
+                  style={[styles.setColor, { backgroundColor: "#8A95A5" }]}
                   onPress={() => this.setState({ backgroundColor: "#8A95A5" })}
                 ></TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.color4]}
+                  style={[styles.setColor, { backgroundColor: "#B9C6AE" }]}
                   onPress={() => this.setState({ backgroundColor: "#B9C6AE" })}
                 ></TouchableOpacity>
               </View>
-            </View>
-            {/*button to chat room */}
-            <View>
-              <TouchableOpacity
-                style={[
-                  styles.chatButton,
-                  { backgroundColor: this.state.backgroundColor },
-                ]}
+
+              {/*button to chat room */}
+
+              <Pressable
+                style={[styles.chatButton]}
+                title="Start Chatting"
+                //send name and background color state when user clicks start chatting button
                 onPress={() =>
                   this.props.navigation.navigate("Chat", {
                     name: this.state.name,
@@ -77,11 +89,11 @@ export default class Start extends React.Component {
                 }
               >
                 <Text style={styles.chatButtonText}>Start Chatting</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
-        </View>
-      </ImageBackground>
+        </ImageBackground>
+      </View>
     );
   }
 }
@@ -90,6 +102,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
 
   imageBackground: {
@@ -98,130 +111,88 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  titleBox: {
+    flex: 56,
+    justifyContent: "center",
+    textAlign: "center",
+  },
+
   title: {
-    color: "#FFFFFF",
     fontSize: 45,
     fontWeight: "600",
-    width: "50%",
-    height: "50%",
-    flex: 0.7,
+    color: "#FFFFFF",
     textAlign: "center",
-    marginTop: 90,
+  },
+
+  infoBox: {
+    flex: 44,
+    alignItems: "center",
   },
 
   container: {
+    height: 250,
+    backgroundColor: "white",
     width: "88%",
-    height: "44%",
-    marginTop: 200,
-    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    display: "flex",
-  },
-
-  namefield: {
-    color: "#757083",
-    top: 25,
-    height: 60,
-    borderWidth: 1,
-    fontSize: 16,
-    fontWeight: "300",
-    paddingLeft: 45,
-    borderColor: "#777",
-    opacity: 0.5,
+    justifyContent: "space-around",
+    paddingTop: 15,
+    paddingBottom: 15,
   },
 
   textInputContainer: {
-    flex: 1,
     width: "88%",
   },
 
   textInputIcon: {
+    height: 20,
+    width: 20,
     position: "absolute",
-    top: 45,
-    left: 15,
+    top: 15,
+    left: 12,
+    opacity: 0.5,
+  },
+
+  namefield: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: "300",
+    color: "#757083",
+    opacity: 0.5,
+    padding: 10,
+    paddingLeft: 45,
   },
 
   chooseColorContainer: {
-    position: "absolute",
-    flex: 1,
-    alignSelf: "center",
-    justifyContent: "center",
+    width: "85%",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
   chooseColor: {
-    fontWeight: "300",
     fontSize: 16,
+    fontWeight: "300",
     color: "#757083",
-    opacity: 100,
-    alignSelf: "center",
   },
 
-  color1: {
-    backgroundColor: "#090C08",
-    width: 45,
-    height: 45,
-    margin: 10,
-    marginTop: 0,
-    borderRadius: 45 / 2,
-  },
-
-  color2: {
-    backgroundColor: "#474056",
-    width: 45,
-    height: 45,
-    margin: 10,
-    marginTop: 0,
-    borderRadius: 45 / 2,
-  },
-
-  color3: {
-    backgroundColor: "#8A95A5",
-    width: 45,
-    height: 45,
-    margin: 10,
-    marginTop: 0,
-    borderRadius: 45 / 2,
-  },
-
-  color4: {
-    backgroundColor: "#B9C6AE",
-    width: 45,
-    height: 45,
-    margin: 10,
-    marginTop: 0,
-    borderRadius: 45 / 2,
-  },
-
-  backgroundColor: {
-    flexDirection: "row",
-    marginTop: 15,
+  setColor: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 
   chatButton: {
-    flex: 1,
-    position: "absolute",
-    bottom: 25,
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "center",
+    height: 50,
     backgroundColor: "#757083",
     width: "88%",
-    height: 60,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-    opacity: 0.9,
+    justifyContent: "center",
   },
 
   chatButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#fff",
+    color: "#FFFFFF",
+    textAlign: "center",
   },
 });
