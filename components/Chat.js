@@ -2,20 +2,21 @@ import React from "react";
 import { View, StyleSheet, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 
-import firebase from "firebase";
-import("firebase/firestore");
+const firebase = require("firebase");
+require("firebase/firestore");
 
 export default class Chat extends React.Component {
   constructor() {
     super();
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCYhM7ZWoVZLLUD5xzpcepyID3B5w1sfuE",
-      authDomain: "test-8b82a.firebaseapp.com",
-      databaseURL: "https://test-8b82a.firebaseio.com",
-      projectId: "test-8b82a",
-      storageBucket: "test-8b82a.appspot.com",
-      messagingSenderId: "202131758796",
+      apiKey: "AIzaSyCt4zaQ5DIbk1msR_jp989W8XRENanwmEE",
+      authDomain: "chatapp-6f211.firebaseapp.com",
+      projectId: "chatapp-6f211",
+      storageBucket: "chatapp-6f211.appspot.com",
+      messagingSenderId: "1048384509354",
+      appId: "1:1048384509354:web:06da431796b7f35d3187d3",
+      measurementId: "G-M366W4PQFS",
     };
 
     if (!firebase.apps.length) {
@@ -23,6 +24,7 @@ export default class Chat extends React.Component {
     }
 
     this.referenceChatMessages = firebase.firestore().collection("messages");
+    this.referenceMessageUser = null;
 
     this.state = {
       messages: [],
@@ -64,11 +66,11 @@ export default class Chat extends React.Component {
 
   componentWillUnmount() {
     this.authUnsubscribe();
-    this.unsubscribe();
+    this.authUnsubscribe();
   }
 
   // Add messages to database
-  addMessage() {
+  addMessages() {
     const message = this.state.messages[0];
     // add a new messages to the collection
     this.referenceChatMessages.add({
@@ -81,9 +83,15 @@ export default class Chat extends React.Component {
   }
 
   onSend(messages = []) {
-    this.setState((previousState) => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }));
+    this.setState(
+      (previousState) => ({
+        messages: GiftedChat.append(previousState.messages, messages),
+      }),
+      // Make sure to call addMessages so they get saved to the server
+      () => {
+        this.addMessages();
+      }
+    );
   }
 
   onCollectionUpdate = (querySnapshot) => {
@@ -96,7 +104,6 @@ export default class Chat extends React.Component {
         _id: data._id,
         text: data.text,
         createdAt: data.createdAt.toDate(),
-
         user: data.user,
       });
     });
