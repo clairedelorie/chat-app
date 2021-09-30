@@ -2,12 +2,21 @@ import React from "react";
 import { View, StyleSheet, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 
-const firebase = require("firebase");
-require("firebase/firestore");
+import firebase from "firebase";
+import("firebase/firestore");
 
 export default class Chat extends React.Component {
   constructor() {
     super();
+    this.state = {
+      messages: [],
+      uid: 0,
+      loggedInText: "Logging in...",
+      user: {
+        _id: "",
+        name: "",
+      },
+    };
 
     const firebaseConfig = {
       apiKey: "AIzaSyCt4zaQ5DIbk1msR_jp989W8XRENanwmEE",
@@ -15,8 +24,6 @@ export default class Chat extends React.Component {
       projectId: "chatapp-6f211",
       storageBucket: "chatapp-6f211.appspot.com",
       messagingSenderId: "1048384509354",
-      appId: "1:1048384509354:web:06da431796b7f35d3187d3",
-      measurementId: "G-M366W4PQFS",
     };
 
     if (!firebase.apps.length) {
@@ -24,24 +31,14 @@ export default class Chat extends React.Component {
     }
 
     this.referenceChatMessages = firebase.firestore().collection("messages");
-    this.referenceMessageUser = null;
-
-    this.state = {
-      messages: [],
-      uid: 0,
-      user: {
-        _id: "",
-        name: "",
-      },
-    };
   }
   componentDidMount() {
     const name = this.props.route.params.name;
     this.props.navigation.setOptions({ title: name });
 
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        firebase.auth().signInAnonymously();
+        await firebase.auth().signInAnonymously();
       }
       // Update user state with active user
       this.setState({
@@ -66,7 +63,7 @@ export default class Chat extends React.Component {
 
   componentWillUnmount() {
     this.authUnsubscribe();
-    this.authUnsubscribe();
+    this.unsubscribe();
   }
 
   // Add messages to database
@@ -77,7 +74,7 @@ export default class Chat extends React.Component {
       uid: this.state.uid,
       _id: message._id,
       createdAt: message.createdAt,
-      text: message.text || null,
+      text: message.text,
       user: message.user,
     });
   }
@@ -87,8 +84,8 @@ export default class Chat extends React.Component {
       (previousState) => ({
         messages: GiftedChat.append(previousState.messages, messages),
       }),
-      // Make sure to call addMessages so they get saved to the server
       () => {
+        // Make sure to call addMessages so they get saved to the server
         this.addMessages();
       }
     );
@@ -104,9 +101,10 @@ export default class Chat extends React.Component {
         _id: data._id,
         text: data.text,
         createdAt: data.createdAt.toDate(),
-        user: data.user,
+        user: { _id: data.user._id, name: data.user.name },
       });
     });
+
     this.setState({
       messages,
     });
