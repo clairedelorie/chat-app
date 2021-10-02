@@ -4,13 +4,16 @@ import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import MapView from "react-native-maps";
 
-import firebase from "firebase";
-import("firebase/firestore");
+import CustomActions from "./CustomActions";
+
+const firebase = require("firebase");
+require("firebase/firestore");
 
 export default class Chat extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       messages: [],
       uid: 0,
@@ -19,6 +22,8 @@ export default class Chat extends React.Component {
         _id: "",
         name: "",
       },
+      image: null,
+      location: null,
     };
 
     const firebaseConfig = {
@@ -27,6 +32,8 @@ export default class Chat extends React.Component {
       projectId: "chatapp-6f211",
       storageBucket: "chatapp-6f211.appspot.com",
       messagingSenderId: "1048384509354",
+      appId: "1:1048384509354:web:06da431796b7f35d3187d3",
+      measurementId: "G-M366W4PQFS",
     };
 
     if (!firebase.apps.length) {
@@ -34,6 +41,7 @@ export default class Chat extends React.Component {
     }
 
     this.referenceChatMessages = firebase.firestore().collection("messages");
+    this.referenceMessagesUser = null;
   }
   componentDidMount() {
     const name = this.props.route.params.name;
@@ -92,6 +100,8 @@ export default class Chat extends React.Component {
       createdAt: message.createdAt,
       text: message.text,
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
   }
 
@@ -156,6 +166,8 @@ export default class Chat extends React.Component {
         text: data.text,
         createdAt: data.createdAt.toDate(),
         user: { _id: data.user._id, name: data.user.name },
+        image: data.image || null,
+        location: data.location || null,
       });
     });
 
@@ -182,6 +194,35 @@ export default class Chat extends React.Component {
       />
     );
   }
+
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  // Function to render the Custom View, which will be used to display the location map
+  renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3,
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  };
+
   render() {
     let { backgroundColor } = this.props.route.params;
 
@@ -192,9 +233,10 @@ export default class Chat extends React.Component {
             //change the color of the chat bubble
             renderBubble={this.renderBubble.bind(this)}
             renderInputToolbar={this.renderInputToolbar.bind(this)}
+            renderActions={this.renderCustomActions}
+            renderCustomView={this.renderCustomView}
             messages={this.state.messages}
             onSend={(messages) => this.onSend(messages)}
-            isTyping={true}
             user={this.state.user}
           />
           {Platform.OS === "android" ? (
