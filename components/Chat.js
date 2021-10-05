@@ -22,6 +22,7 @@ export default class Chat extends React.Component {
         _id: "",
         name: "",
       },
+      isConnected: false,
       image: null,
       location: null,
     };
@@ -86,7 +87,7 @@ export default class Chat extends React.Component {
   }
 
   componentWillUnmount() {
-    this.authUnsubscribe();
+    this.unsubscribe();
     this.authUnsubscribe();
   }
 
@@ -98,7 +99,7 @@ export default class Chat extends React.Component {
       uid: this.state.uid,
       _id: message._id,
       createdAt: message.createdAt,
-      text: message.text,
+      text: message.text || null,
       user: message.user,
       image: message.image || null,
       location: message.location || null,
@@ -188,8 +189,8 @@ export default class Chat extends React.Component {
       <Bubble
         {...props}
         wrapperStyle={{
-          right: { backgroundColor: "#2d63d3" },
-          left: { backgroundColor: "#7e7e7e" },
+          right: { backgroundColor: "#5fc9f8" },
+          left: { backgroundColor: "#FFFFFF" },
         }}
       />
     );

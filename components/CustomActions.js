@@ -77,13 +77,15 @@ export default class CustomActions extends React.Component {
   // Then use the onSend function from Chat.js to send the message through GiftedChat (using renderCustomView to render a custom map component)
   getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-
+    console.log(status);
     if (status === "granted") {
-      let result = await Location.getCurrentPositionAsync({
+      const result = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
       }).catch((error) => console.log(error));
       const longitude = JSON.stringify(result.coords.longitude);
+
       const latitude = JSON.stringify(result.coords.latitude);
+      console.log(longitude, latitude);
       if (result) {
         this.props.onSend({
           location: {
