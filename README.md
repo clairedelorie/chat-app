@@ -1,8 +1,8 @@
 # Live App
 
-![image](livechatscreen.png)
+![image](livechatscreen.PNG)
 
-![](livechatchat.png)
+![](livechatchat.PNG)
 
 ---
 
